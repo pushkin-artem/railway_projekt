@@ -66,6 +66,14 @@ void graf_matrixbol(map<int, map<int, int>>& graf, string fajlnev)
             graf[i].insert(make_pair(j, matrix[i][j]));
         }
     }
+
+
+    for (map<int, map<int, int>>::iterator it1=graf.begin(); it1!=graf.end(); ++it1)
+    {
+        cout << "it1->first:" << it1->first << " ";
+        for (map<int, int>::iterator it2=it1->second.begin(); it2!=it1->second.end(); ++it2)
+        cout << "it2->first:" <<  it2->first << " it2->second:" << it2->second << endl;
+        }
 }
 
 int main()
