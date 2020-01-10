@@ -2,7 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <map>
-
+#include <queue>
 
 using namespace std;
 
@@ -12,8 +12,20 @@ using namespace std;
 
 struct Ut_adatai
 {
-    int kapcsoltsag, ateresztokepesseg, aramlas;
+    int kapcsoltsag, ido, ateresztokepesseg, aramlas;
 };
+
+struct Ut
+{
+    int suly; //az útvonal összsúlya (összideje)
+    vector<int> ut; //az útvonal által érintett csúcsok (az érintés sorrendjében)
+    Ut(int suly_){suly = suly_;} //konstruktor függvény
+};
+
+bool operator<(Ut a, Ut b)
+{
+    return a.suly > b.suly;
+}
 
 void beolvas_matrix(vector<vector<int>>& matrix, string fajlnev, int & dimenzioszam)
 {
@@ -58,6 +70,38 @@ void beolvas_matrix(vector<vector<int>>& matrix, string fajlnev, int & dimenzios
     cout << endl;
 }
 
+///itt hozom letre az idobeli tartomanyokat megallok kozul matrixos alakban
+
+void idobeli_matrix_letrehozasa(vector<vector<int>>& matrix1, vector<vector<int>>& matrix2, int dimenzio_szam)
+{
+    matrix1 = matrix2;
+
+    //legyen minden megallo kozul 2 ora az ut
+
+    for(int i = 0; i < matrix1.size(); i++)
+    {
+        for(int j = 0; j < matrix1[i].size(); j++)
+        {
+            if(matrix1[i][j] != 0)
+                matrix1[i][j] = 2;
+        }
+    }
+
+    cout << "Idobeli matrix:" << endl;
+
+    //ellenorzes:
+
+    for (x:matrix1)
+    {
+        for(int i  = 0; i < dimenzio_szam; i++)
+        cout << x[i] << " ";
+        cout << endl;
+    }
+    cout << endl;
+
+
+}
+
 ///itt hozom letre a graf eleinek az atereszhetokepesseget a kocsik kapacitasanak megfeleloen
 
 void kapacitasi_matrix_letrehozasa(vector<vector<int>>& matrix1, vector<vector<int>>& matrix2, int dimenzio_szam)
@@ -96,7 +140,6 @@ void kapacitasi_matrix_letrehozasa(vector<vector<int>>& matrix1, vector<vector<i
 
 }
 
-
 ///itt hozom letre a graf eleinek az aramlasat a csomagok mennyisegenek megfeleloen
 
 void aramlasi_matrix_letrehozasa(vector<vector<int>>& matrix1, vector<vector<int>>& matrix2, int dimenzio_szam)
@@ -133,7 +176,7 @@ void aramlasi_matrix_letrehozasa(vector<vector<int>>& matrix1, vector<vector<int
 
 }
 
-void graf_matrixbol(map<int, map<int, Ut_adatai>>& graf, vector<vector<int>>& matrix1, vector<vector<int>>& matrix2, vector<vector<int>>& matrix3)
+void graf_matrixbol(map<int, map<int, Ut_adatai>>& graf, vector<vector<int>>& matrix1, vector<vector<int>>& matrix2, vector<vector<int>>& matrix3, vector<vector<int>>& matrix4)
 {
     Ut_adatai ut;
 
@@ -147,8 +190,9 @@ void graf_matrixbol(map<int, map<int, Ut_adatai>>& graf, vector<vector<int>>& ma
             if (matrix1[i][j] != 0)
             {
                 ut.kapcsoltsag = matrix1[i][j];
-                ut.ateresztokepesseg = matrix2[i][j];
-                ut.aramlas = matrix3[i][j];
+                ut.ido = matrix2[i][j];
+                ut.ateresztokepesseg = matrix3[i][j];
+                ut.aramlas = matrix4[i][j];
                 graf[i].insert(make_pair(j, ut));
             }
         }
@@ -160,7 +204,38 @@ void graf_matrixbol(map<int, map<int, Ut_adatai>>& graf, vector<vector<int>>& ma
     {
         cout << "sorszam:" << it1->first << " ";
         for (map<int, Ut_adatai>::iterator it2=it1->second.begin(); it2!=it1->second.end(); ++it2)
-            cout << "oszlopszam:" <<  it2->first << "kapcsoltsag :" << it2->second.kapcsoltsag << ", ateresztokepesseg :" << it2->second.ateresztokepesseg << ", aramlas :" << it2->second.aramlas << endl;
+            cout << "oszlopszam: " <<  it2->first << ", kapcsoltsag: " << it2->second.kapcsoltsag << ", ido: " << it2->second.ido << ", ateresztokepesseg: " << it2->second.ateresztokepesseg << ", aramlas: " << it2->second.aramlas << endl;
+    }
+}
+
+Ut szelessegi_bejaras(int kezdo, int cel, map<int, map<int, Ut_adatai>> graf)
+{
+    priority_queue<Ut> sor;
+
+    Ut aktualis(0);
+    aktualis.ut.push_back(kezdo);
+
+    sor.push(aktualis); //hozzáadjuk az elemet a sorhoz
+
+    while(!sor.empty())
+    {
+        Ut aktualis = sor.top();
+        sor.pop();
+
+        if(aktualis.ut.back() == cel)
+        {
+            return aktualis;
+        }
+
+        for(pair<int, Ut_adatai> p: graf[aktualis.ut.back()]) //az utolso elem leszarmazattait nezzuk
+        {
+            Ut uj = aktualis;
+            uj.suly += p.second.ido; //uj elem sulya
+
+            uj.ut.push_back(p.first); //leszarmazott csucspont hozzadasa
+
+            sor.push(uj); //eltaroljuk
+        }
     }
 }
 
@@ -170,6 +245,9 @@ int main()
     vector<vector<int>> szomszedsagi_matrix;
     beolvas_matrix(szomszedsagi_matrix, "vasut_matrix.txt", dimenzio_szam);
 
+    vector<vector<int>> idobeli_matrix;
+    idobeli_matrix_letrehozasa(idobeli_matrix, szomszedsagi_matrix, dimenzio_szam);
+
     vector<vector<int>> kapacitasi_matrix; //atengedő képesség
     kapacitasi_matrix_letrehozasa(kapacitasi_matrix, szomszedsagi_matrix, dimenzio_szam);
 
@@ -177,9 +255,10 @@ int main()
     aramlasi_matrix_letrehozasa(aramlasi_matrix, szomszedsagi_matrix, dimenzio_szam);
 
     map<int, map<int, Ut_adatai>> graf;
-    graf_matrixbol(graf, szomszedsagi_matrix, kapacitasi_matrix, aramlasi_matrix);
+    graf_matrixbol(graf, szomszedsagi_matrix, idobeli_matrix, kapacitasi_matrix, aramlasi_matrix);
 
-    //szelessegi_bejaras( );
+    Ut legjobb = szelessegi_bejaras(0,4, graf);
+    cout << legjobb.suly << endl;
 
     return 0;
 }
