@@ -77,19 +77,13 @@ using namespace std;
 struct Vonat
 {
     string vonat_nev;
-    int vonat_biras;
-};
-
-struct Menetrend
-{
-    string allomas_nev;
-    int allomas_ora;
+    int vonat_biras = 0;
 };
 
 struct Kocsi
 {
     string kocsi_nev;
-    int kocsi_kapacitas;
+    int kocsi_kapacitas = 0;
     string kocsi_helye;
 };
 
@@ -97,26 +91,25 @@ struct Csomag
 {
     string csomag_nev;
     string csomag_kezdohelye, csomag_celhelye;
-    int csomag_mennyiseg;
+    int csomag_mennyiseg = 0;
 };
 
 class Allomas
 {
 public:
 
-    Vonat vonat;
-    Menetrend menetrend;
+    //Vonat vonat;
+    string allomas_nev;
+    int allomas_ora;
     Kocsi kocsi;
     Csomag csomag;
 
-    Allomas(Vonat vonat1){vonat = vonat1;}
+    //Allomas(Vonat vonat1){vonat = vonat1;}
 };
 
 
-
-void beolvasas(string fajlnev, Vonat & v, vector<Menetrend>& allomasok, vector<Kocsi>& kocsik, vector<Csomag>& csomagok)
+void beolvasas(string fajlnev, vector<Allomas>& allomasok)
 {
-
     ifstream befajl(fajlnev);
 
     if (!befajl.good())
@@ -125,10 +118,9 @@ void beolvasas(string fajlnev, Vonat & v, vector<Menetrend>& allomasok, vector<K
         return;
     }
 
-    //Vonat v;
-    Menetrend a;
-    Kocsi k;
-    Csomag c;
+    Vonat v;
+
+    Allomas a;
 
     string tmp;
 
@@ -140,7 +132,7 @@ void beolvasas(string fajlnev, Vonat & v, vector<Menetrend>& allomasok, vector<K
             getline(befajl, tmp);
             v.vonat_biras = atoi(tmp.c_str());
         }
-        cout << v.vonat_nev << " " << v.vonat_biras << endl;
+        //cout << v.vonat_nev << " " << v.vonat_biras << endl;
     }
 
     else if(fajlnev == "menetrend.txt")
@@ -153,28 +145,26 @@ void beolvasas(string fajlnev, Vonat & v, vector<Menetrend>& allomasok, vector<K
 
             allomasok.push_back(a);
         }
-
-        for (x:allomasok)
-        {
-            cout << x.allomas_nev << " " << x.allomas_ora << endl;
-        }
     }
 
     else if(fajlnev == "kocsik.txt")
     {
         while(befajl.good())
         {
-            getline(befajl, k.kocsi_nev, ' ');
+            getline(befajl, a.kocsi.kocsi_nev, ' ');
             getline(befajl, tmp, ' ');
-            k.kocsi_kapacitas = atoi(tmp.c_str());
-            getline(befajl, k.kocsi_helye);
+            a.kocsi.kocsi_kapacitas = atoi(tmp.c_str());
+            getline(befajl, a.kocsi.kocsi_helye);
 
-            kocsik.push_back(k);
-        }
-
-        for (x:kocsik)
-        {
-            cout << x.kocsi_nev << " " << x.kocsi_kapacitas << " " << x.kocsi_helye << endl;
+            for(int i = 0; i < allomasok.size(); i++)
+            {
+                if(a.kocsi.kocsi_helye == allomasok[i].allomas_nev)
+                {
+                    allomasok[i].kocsi.kocsi_nev = a.kocsi.kocsi_nev;
+                    allomasok[i].kocsi.kocsi_kapacitas = a.kocsi.kocsi_kapacitas;
+                    allomasok[i].kocsi.kocsi_helye = a.kocsi.kocsi_helye;
+                }
+            }
         }
     }
 
@@ -182,41 +172,93 @@ void beolvasas(string fajlnev, Vonat & v, vector<Menetrend>& allomasok, vector<K
     {
         while(befajl.good())
         {
-            getline(befajl, c.csomag_nev, ' ');
-            getline(befajl, c.csomag_kezdohelye, ' ');
-            getline(befajl, c.csomag_celhelye, ' ');
+            getline(befajl, a.csomag.csomag_nev, ' ');
+            getline(befajl, a.csomag.csomag_kezdohelye, ' ');
+            getline(befajl, a.csomag.csomag_celhelye, ' ');
             getline(befajl, tmp);
-            c.csomag_mennyiseg = atoi(tmp.c_str());
+            a.csomag.csomag_mennyiseg = atoi(tmp.c_str());
 
-            csomagok.push_back(c);
-        }
-
-        for (x:csomagok)
-        {
-            cout << x.csomag_nev << " " << x.csomag_kezdohelye << " " << x.csomag_celhelye <<  " " << x.csomag_mennyiseg << endl;
+            for(int i = 0; i < allomasok.size(); i++)
+            {
+                if(a.csomag.csomag_kezdohelye == allomasok[i].allomas_nev)
+                {
+                    allomasok[i].csomag.csomag_nev = a.csomag.csomag_nev;
+                    allomasok[i].csomag.csomag_kezdohelye = a.csomag.csomag_kezdohelye;
+                    allomasok[i].csomag.csomag_celhelye = a.csomag.csomag_celhelye;
+                    allomasok[i].csomag.csomag_mennyiseg = a.csomag.csomag_mennyiseg;
+                }
+            }
         }
     }
-
 }
 
 
+void szabalyok(vector<Allomas> allomasok)
+{
+
+    for(x : allomasok)
+    {
+        cout << "Allomas nev: " << x.allomas_nev << endl;
+        cout << "Ora: " << x.allomas_ora << endl;
+        cout << "Kocsi adatai: " << x.kocsi.kocsi_nev << " " << x.kocsi.kocsi_kapacitas << " " << x.kocsi.kocsi_helye << endl;
+        cout << "Csomag adatai: " << x.csomag.csomag_nev << " " << x.csomag.csomag_kezdohelye << " " << x.csomag.csomag_celhelye << " " << x.csomag.csomag_mennyiseg << endl;
+        cout << endl;
+    }
+    cout << endl;
+
+    int ido = 0;
+
+    for(x : allomasok)
+    {
+        if(x.kocsi.kocsi_helye != "" && x.csomag.csomag_kezdohelye != "")
+        {
+            if(x.kocsi.kocsi_helye == x.csomag.csomag_kezdohelye)
+            {
+                if(x.csomag.csomag_mennyiseg >= x.kocsi.kocsi_kapacitas)
+                {
+                    x.csomag.csomag_mennyiseg =  x.csomag.csomag_mennyiseg - x.kocsi.kocsi_kapacitas;
+                    cout << ido << " pakol " << x.kocsi.kocsi_nev << " " << x.csomag.csomag_nev << " " << x.kocsi.kocsi_kapacitas << endl;
+                    x.kocsi.kocsi_kapacitas  = 0;
+
+                }
+                else
+                {
+                    x.kocsi.kocsi_kapacitas =  x.kocsi.kocsi_kapacitas - x.csomag.csomag_mennyiseg;
+                    cout << ido << " pakol " << x.kocsi.kocsi_nev << " " << x.csomag.csomag_nev << " " << x.csomag.csomag_mennyiseg << endl;
+                    x.csomag.csomag_mennyiseg  = 0;
+                }
+            }
+        }
+    }
+
+    /*
+    for(x : allomasok)
+    {
+        cout << "Allomas nev: " << x.allomas_nev << endl;
+        cout << "Ora: " << x.allomas_ora << endl;
+        cout << "Kocsi adatai: " << x.kocsi.kocsi_nev << " " << x.kocsi.kocsi_kapacitas << " " << x.kocsi.kocsi_helye << endl;
+        cout << "Csomag adatai: " << x.csomag.csomag_nev << " " << x.csomag.csomag_kezdohelye << " " << x.csomag.csomag_celhelye << " " << x.csomag.csomag_mennyiseg << endl;
+        cout << endl;
+    }
+    */
+}
+
 int main()
 {
-    vector<Menetrend> allomasok;
-    vector<Kocsi> kocsik;
-    vector<Csomag> csomagok;
+    vector<Allomas> allomasok;
 
-    Vonat v;
+    beolvasas("vonat.txt", allomasok);
+    beolvasas("menetrend.txt", allomasok);
+    beolvasas("kocsik.txt", allomasok);
+    beolvasas("csomagok.txt", allomasok);
 
-    beolvasas("vonat.txt", v, allomasok, kocsik, csomagok);
-    beolvasas("menetrend.txt", v, allomasok, kocsik, csomagok);
-    beolvasas("kocsik.txt", v, allomasok, kocsik, csomagok);
-    beolvasas("csomagok.txt", v, allomasok, kocsik, csomagok);
+    szabalyok(allomasok);
 
-    cout << v.vonat_nev << endl;
+    //cout << v.vonat_nev << endl;
 
-    Allomas x(v);
-    cout << x.vonat.vonat_nev << " " << x.vonat.vonat_biras << endl;
+    //Allomas x(v, m);
+    //cout << x.vonat.vonat_nev << " " << x.vonat.vonat_biras << endl;
+    //cout << x.menetrend.allomas_nev << endl;
 
     return 0;
 }
