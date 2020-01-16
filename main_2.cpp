@@ -188,11 +188,12 @@ void szabalyok(vector<Allomas> allomasok)
     cout << endl;
 
     int ido = 0;
+    int timer = 0;
     bool direction = 1;
 
     while(true)
     {    //заменить рекурсией или другим условием
-        cout<< "Time is: "<< ido << endl;
+        cout<< "Time is: "<< timer << endl;
     //Первый шаг - проверка всех станций в момент времени 0
         for(auto x : allomasok)
         {
@@ -247,8 +248,10 @@ void szabalyok(vector<Allomas> allomasok)
         else
             ido=ido-1;
 
+        timer++;
             system("pause");
             cout << endl;
+
     }
 
     /*
