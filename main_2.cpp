@@ -193,7 +193,7 @@ void szabalyok(vector<Allomas> allomasok)
 
     while(true)
     {    //заменить рекурсией или другим условием
-        cout<< "Time is: "<< timer << endl;
+        cout<< "Time is: "<< timer <<  " Ido " << ido <<endl;
     //Первый шаг - проверка всех станций в момент времени 0
         for(auto x : allomasok)
         {
@@ -207,6 +207,7 @@ void szabalyok(vector<Allomas> allomasok)
             */
             if(ido == x.allomas_ora)
             {
+                x.allomas_ora = timer;
                 cout << "Menetrend: " << x.allomas_nev << " " << x.allomas_ora << ", Vonat:  " << x.vonat.vonat_nev << " " << x.vonat.vonat_biras << endl;
             }
 
@@ -218,13 +219,13 @@ void szabalyok(vector<Allomas> allomasok)
                     if(x.csomag.csomag_mennyiseg >= x.kocsi.kocsi_kapacitas)
                     {
                         x.csomag.csomag_mennyiseg =  x.csomag.csomag_mennyiseg - x.kocsi.kocsi_kapacitas;
-                        cout << ido << " pakol " << x.kocsi.kocsi_nev << " " << x.csomag.csomag_nev << " " << x.kocsi.kocsi_kapacitas << endl;
+                        //cout << timer << " pakol " << x.kocsi.kocsi_nev << " " << x.csomag.csomag_nev << " " << x.kocsi.kocsi_kapacitas << endl;
                         x.kocsi.kocsi_kapacitas  = 0;
                     }
                     else
                     {
                         x.kocsi.kocsi_kapacitas =  x.kocsi.kocsi_kapacitas - x.csomag.csomag_mennyiseg;
-                        cout << ido << " pakol " << x.kocsi.kocsi_nev << " " << x.csomag.csomag_nev << " " << x.csomag.csomag_mennyiseg << endl;
+                        cout << timer << " pakol " << x.kocsi.kocsi_nev << " " << x.csomag.csomag_nev << " " << x.csomag.csomag_mennyiseg << endl;
                         x.csomag.csomag_mennyiseg  = 0;
                     }
                 }
@@ -239,7 +240,6 @@ void szabalyok(vector<Allomas> allomasok)
 
         if (ido == allomasok[0].allomas_ora)
         {
-            cout<<"The begining of the vector is reached"<<endl;
             direction=1;
         }
 
@@ -249,6 +249,7 @@ void szabalyok(vector<Allomas> allomasok)
             ido=ido-1;
 
         timer++;
+
             system("pause");
             cout << endl;
 
