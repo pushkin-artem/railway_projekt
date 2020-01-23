@@ -267,8 +267,7 @@ void szabalyok(vector<Allomas> allomasok)
                     {
                         cout << "csatol " << x.kocsik[i].kocsi_nev << " " << x.vonat.vonat_nev << endl;
                         x.kocsi.kocsi_szabad = false;
-                        //for(unsigned i = 0; i < x.kocsik.size(); i++)
-
+                        /*
                         int ido_2 = ido + 1;
                         for(y : allomasok)
                         {
@@ -279,13 +278,14 @@ void szabalyok(vector<Allomas> allomasok)
 
 
                         x.vonat.vonat_biras = x.vonat.vonat_biras - 1;
+                        */
                     }
                 }
 
                 if(x.csomag.csomag_celhelye == x.allomas_nev)
                 {
-                    for(unsigned i = 0; i < x.kocsik.size(); i++)
-                    cout << "lecsatol " << x.kocsik[i].kocsi_nev << " " << x.vonat.vonat_nev << endl;
+                    //for(unsigned i = 0; i < x.kocsik.size(); i++)
+                        //cout << "lecsatol " << x.kocsik[i].kocsi_nev << " " << x.vonat.vonat_nev << endl;
 
                     //cout<< " Privezli na stanciyu "<<endl;
 
@@ -305,20 +305,6 @@ void szabalyok(vector<Allomas> allomasok)
             }
         }
 
-        cout << endl;
-        for(auto x : allomasok)
-        {
-        cout << "Allomas nev: " << x.allomas_nev << endl;
-        cout << "Ora: " << x.allomas_ora << endl;
-        cout << "Kocsik adatai: ";
-        for(auto y : x.kocsik)
-            cout << y.kocsi_nev << " " << y.kocsi_kapacitas << " " << y.kocsi_helye << ", ";
-        cout << endl;
-        //cout << "Kocsi adatai: " << x.kocsi.kocsi_nev << " " << x.kocsi.kocsi_kapacitas << " " << x.kocsi.kocsi_helye << endl;
-        cout << "Csomag adatai: " << x.csomag.csomag_nev << " " << x.csomag.csomag_kezdohelye << " " << x.csomag.csomag_celhelye << " " << x.csomag.csomag_mennyiseg << endl;
-        cout << endl;
-    }
-    cout << endl;
 
 
         //поезд с вагонами
